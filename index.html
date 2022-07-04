@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+
+    <title>Todo List</title>
+    <script type="text/javascript">
+        var tasks = [];
+        var count = 0;
+
+
+        function checkTodo(id){
+            tasks = tasks.map(
+                t=>{
+                    if(t.id===id){
+                        if(t.status===0){
+                            t.status=1;
+                            t.todo="<del>"+t.todo+"</del>";
+                        }else{
+                            t.status=0;
+                            t.todo=t.todo.substr(5,t.todo.length-11);
+                        }
+                    }
+                    return t;
+                }
+            );
+            showTodos();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id != id);
+            showTodos();
+        }
+
+        function saveEditedTodo(id){
+            console.log("hello");
+            var editedTodo = document.getElementById('editTodo').value;
+            tasks.map(task => {
+                if(task.id===id){
+                    if(task.status===1){
+                        task.todo="<del>"+editedTodo+"</del>";
+                    }else{
+                        task.todo=editedTodo;
+                    } 
+                }
+                return task;
+            })
+            showTodos();
+
+        }
+        function editTodo(id){
+            var todo_list = document.getElementById('todo_list');
+            todo_list.innerHTML = "";
+            tasks.forEach(task => {
+                if(task.id===id){
+                    var ttext = task.todo;
+                    if(task.status===1) ttext=ttext.substr(5,ttext.length-11);
+                    todo_list.innerHTML += `<div class="card">
+                                                <div class="card-body">
+                                                    <div><input type="text" value="${ttext}" id = "editTodo" class="form-control  rounded" aria-label="Search" aria-describedby="search-addon" /></div>
+                                                    <div><button type="button" class="btn btn-outline-primary" onclick="saveEditedTodo(${task.id})">Save</button></div>
+                                                </div>
+                                            </div>`;
+                }else{
+                    todo_list.innerHTML +=                             
+                            `<div class="card">
+                                <div class="card-body ">
+                                    <p class="card-text id = "task_${task.id}">${task.todo}</p>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-primary" onclick="checkTodo(${task.id})">Check</button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="editTodo(${task.id})">Edit</button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="deleteTask(${task.id})">Delete</button>
+                                    </div>
+                                </div>
+                            <div>`;
+                }   
+            })
+        }
+
+        function showTodos() {
+            var todo_list = document.getElementById('todo_list');
+            todo_list.innerHTML = "";
+            tasks.forEach(task => {
+                if(task.status===0){
+                    todo_list.innerHTML += 
+                            `<div class="card mt-2 mb-2">
+                                <div class="card-body ">
+                                    <p class="card-text id = "task_${task.id}">${task.todo}</p>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-primary" onclick="checkTodo(${task.id})">Check</button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="editTodo(${task.id})">Edit</button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="deleteTask(${task.id})">Delete</button>
+                                    </div>
+                                </div>
+                            <div>`;
+                }else{
+                    todo_list.innerHTML += 
+                        `<div class="card mt-2 mb-2">
+                            <div class="card-body ">
+                                <p class="card-text id = "task_${task.id}">${task.todo}</p>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary" onclick="checkTodo(${task.id})">Uncheck</button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="editTodo(${task.id})">Edit</button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="deleteTask(${task.id})">Delete</button>
+                                </div>
+                            </div>
+                        <div>`;
+                }
+            })
+        }
+
+        function addTodo() {
+            count++;
+            var todo = document.getElementById('todo').value;
+            if(todo.length === 0){
+                alert("Todo cant be empty");
+            }else{
+                tasks.push({
+                id: count ,
+                todo: todo,
+                status: 0
+            });
+            }
+            showTodos();
+            document.getElementById('todo').value = "";
+        }
+    </script>
+</head>
+
+<body class="container">
+    <nav class="navbar navbar-light bg-light sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Todo List</span>
+        </div>
+
+        <div class="container-fluid">
+            <div class="form-outline col-sm-10">
+                <input type="search" id="todo" class="form-control rounded " placeholder="Enter Todo" aria-label="Search" aria-describedby="search-addon" />
+            </div>
+            <div class="col-sm-2 d-grid">
+                <button type="button" class="btn btn-outline-primary pl-2" onclick="addTodo()">
+                Add
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <br/>
+
+    <div id="todo_list">
+
+    </div>
+</body>
+
+</html>
